@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samuele Centorrino</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header and Navigation -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="site-title">
+                <a href="home.html">Samuele Centorrino</a>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="home.html" class="nav-link active">Home</a></li>
+                <li><a href="cv.html" class="nav-link">Curriculum Vitae</a></li>
+                <li><a href="research.html" class="nav-link">Research</a></li>
+                <li><a href="teaching.html" class="nav-link">Teaching</a></li>
+                <li><a href="contacts.html" class="nav-link">Contacts</a></li>
+            </ul>
+            <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="main-title">Samuele Centorrino</h1>
+        </div>
+    </section>
+
+    <!-- Main Content Section -->
+    <section class="content-section">
+        <div class="content-container">
+            <div class="text-content">
+                <p>Welcome to my webpage.</p>
+                
+                <p>I am a Computational Economics Expert at the <a href="https://www.imf.org/en/Home" target="_blank">International Monetary Fund</a>. I was previously an Associate Professor of Economics (with tenure) at <a href="http://www.stonybrook.edu/economics/" target="_blank">Stony Brook University</a>.</p>
+                
+                <p>I hold a PhD from the Toulouse School of Economics, obtained under the supervision of Professor <a href="http://idei.fr/member.php?i=37" target="_blank">Jean-Pierre Florens</a>.</p>
+                
+                <p>My primary research interest is in Econometric Theory. In particular, I work on estimation and inference in regression models with endogenous regressors.</p>
+                
+                <p><strong>Research interests:</strong></p>
+                <ul class="research-interests">
+                    <li>Econometrics</li>
+                    <li>Nonparametric Statistics</li>
+                    <li>Behavioral Economics and Finance</li>
+                </ul>
+
+                <div class="disclaimer">
+                    <small>Disclaimer: The views expressed on this website are my own and do not necessarily reflect those of the International Monetary Fund, its Executive Board, or its Management.</small>
+                </div>
+            </div>
+            
+            <div class="image-content">
+                <img src="Centorrino_Image.jpeg" class="profile-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; Samuele Centorrino.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle functionality
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        mobileMenuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on a link
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
