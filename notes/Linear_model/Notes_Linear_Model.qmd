@@ -1,14 +1,14 @@
 ---
-title: "Linear models"
+title: "A review of linear models"
 author: "Samuele Centorrino <scentorrino@proton.me>"
 format: 
   html:
     html-math-method: mathjax
     embed-resources: true
-    keep-md: true
-abstract: "The linear model is a ubiquitous tool in econometrics, statistics and data-science. Yet, many people misurderstand some of the assumptions underlying the estimation of this model. This misunderstanding often arises from the ability to distinguish the estimation procedure, e.g. Ordinary Least-Squares, from the statistical model itself. I write this note (accompanied by an R code) to disprove some myths about the linear model: 1) the error term does not need to be normally distributed; 2) the data do not need to be independent and identically distributed; 3) the distribution of the error term can depend on the regressors, and non-iid residuals are allowed, i.e. heteroskedasticity, autocorrelation, and/or dependence clusters can occur. I provide some simple theoretical fundations and some simulations, in which I show that one can obtain consistent and asymptotically normal estimate of the coefficients in all of these situations. Valid tests and confidence intervals can be obtained if one constructs **robust** versions of the standard errors, that account for potential heteroskedasticity and/or autocorrelation."
+abstract: "Linear models are fundamental tools in econometrics, statistics, and data science, yet many practitioners misunderstand their underlying assumptions. This confusion often stems from conflating the estimation procedure (e.g., Ordinary Least Squares) with the statistical model itself. This note, with accompanying R code, addresses three common misconceptions about linear models: (1) error terms need not be normally distributed, (2) data need not be independent and identically distributed, and (3) error distributions may depend on regressors, allowing for heteroskedasticity, autocorrelation, and clustered dependence. I provide some simple theoretical foundations and some simulations, in which I show that one can obtain consistent and asymptotically normal estimators of the coefficients in all of these situations. Valid tests and confidence intervals can be obtained if one constructs **robust** versions of the standard errors, that account for potential heteroskedasticity and/or autocorrelation."
 bibliography: ref.bib
 ---
+
 
 ```{r setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(
@@ -56,35 +56,39 @@ E\left[ X^\prime Y\right] =& E\left[ X^\prime X\right] \beta + \underbrace{E \le
 \end{aligned}
 $$
 
-2.  **Estimation**: how can we construct an estimator of $\beta$? Given data from the joint distribution of $(Y,X)$, $\left\lbrace (Y_i,X_i), i = 1,\dots,n \right\rbrace$, we can replace the population moments above with sample moments. Here, I use $n$ to denote the sample size, but this notation does not imply any specific assumptions on the nature of the data (e.g., it could be a time series). Let
+2.  **Estimation**: how can we construct an estimator of $\beta$? Given data from the joint distribution of $(Y,X)$, $\left\lbrace (Y_i,X_i), i = 1,\dots,n \right\rbrace$, we can replace the population moments above with sample moments. Here, I use $n$ to denote the sample size, but this notation does not imply any specific assumptions on the nature of the data (i.e., it could be a time series). Let
 
 $$
 \mathbf{Y}= \begin{bmatrix} Y_1 \\ \vdots \\ Y_n \end{bmatrix}, \quad \mathbf{X}= \begin{bmatrix} X_1 \\ \vdots \\ X_n \end{bmatrix},
-$$ we can construct the sample moments $\mathbf{X}^\prime \mathbf{Y}/n$ and $\mathbf{X}^\prime \mathbf{X}/n$, so that our estimator of $\beta$ is given by
+$$ 
+
+we can construct the sample moments $\mathbf{X}^\prime \mathbf{Y}/n$ and $\mathbf{X}^\prime \mathbf{X}/n$, so that our estimator of $\beta$ is given by
 
 $$
 \hat\beta = \left( \mathbf{X}^\prime \mathbf{X} \right)^{-1}\mathbf{X}^\prime \mathbf{Y}.
 $$ {#eq-eq:olsest}
 
-There are a variety of theorems that allow us to prove that this estimator converges to the true value of $\beta$ as the sample size increases (this is called the law of large numbers, LLN). It suffices to say that there are versions of the LLN that apply to independent, identically distributed data (IID realizations from the distribution of $(Y,X)$); independent and non-identically distributed data (INID); and also to dependent data (for instance, to time-series, thanks to the ergodic theorem; see @hayashi2001, Ch. 1 and 9). Most of these theorems do not require further conditions than those outlined above (existence of certain moments of the distribution of $(Y,X)$).
+There are a variety of theorems that allow us to prove that this estimator converges to the true value of $\beta$ as the sample size increases (this is called the law of large numbers, LLN). It suffices to say that there are versions of the LLN that apply to independent, identically distributed data (IID realizations from the distribution of $(Y,X)$); independent and non-identically distributed data (INID); and also to dependent data (for instance, to time-series, thanks to the ergodic theorem; see @hayashi2001, Ch. 1 and 9). Most of these theorems do not require further conditions than those outlined above (existence of certain moments of the distribution of $(Y,X)$).^[If you are interested in the details, you can check these [lecture notes](https://cameron.econ.ucdavis.edu/e240a/asymptotic.pdf) by Colin Cameron.]
 
 3.  **Inference**: how do we assess the variability of our estimator, test specific hypotheses and/or construct prediction intervals? We usually need to have a way to show that the distribution of the estimator around the true value of $\beta$ (which exists under the conditions in 1), is well behaved (i.e., targets the correct population parameter and has finite variance). There are two types of results that one can be interested in
 
     a.  **Finite sample properties**: when $n$ is relatively small, we could be interested in assumptions that would allow us to derive the distribution of the estimator. Such assumptions usually restrict the distribution of $\varepsilon$. In particular, one can have that $\varepsilon_i \sim N(0, \sigma^2)$. This assumption implies full independence between the regressors $X$, and the error term. It also entails *homoskedasticity* of the error term (i.e., the variance is the same irrespectively of the value of $X$).
 
-    b.  **Large sample properties**: when $n$ is large, we do not require any assumptions about the distribution of $\varepsilon$. Addional requirements include that the fourth moments of the distribution of $Y$ and $X$ exist (see @stock_watson_2024, Chapter 3). The Central Limit Theorem (CLT) allows us to prove that, with minimal assumptions on the Data Generating Process (DGP), the distribution of the OLS estimator in @eq-eq:olsest converges to a normal distribution.
+    b.  **Large sample properties**: when $n$ is large, we do not require any assumptions about the distribution of $\varepsilon$. Additional requirements include that the fourth moments of the distribution of $Y$ and $X$ exist (see @stock_watson_2024, Chapter 3). The Central Limit Theorem (CLT) allows us to prove that, with minimal assumptions on the Data Generating Process (DGP), the distribution of the OLS estimator in @eq-eq:olsest converges to a normal distribution.
 
-In the era of *big data*, results in $a$ may not be very relevant. In the next section I show that the normal approximations in $b$ hold even with as few as $100$ data points, so that, in my opinion, in many practical applications (and when the model is correctly specified) we should not take a finite-sample approach.
+The reason why finite sample results were (and still are) the initial focus of econometric textbooks, in my opinion, is mainly related to historical reasons. For instance, the textbook by @stock_watson_2024 does not treat the finite-sample properties of the OLS estimator. To a certain extent, I agree that in the era of *big data*, results in $a$ may have limited relevance. In the next section I show numerically that the normal approximation in $b$ holds even with as few as $100$ data points, so that, in my opinion, in many practical applications (and when the model is correctly specified) we should not worry about deviations from gaussianity.
 
-There are also other considerations that we may want to make. For instance, one may be concerned with the **efficiency** of the estimator (i.e., obtaining the estimator with the smallest possible variance). The Gauss-Markov theorem shows that the OLS estimator is the most efficient when the error term is homoskedastic (i.e. the variance of $\varepsilon$ does not depend on $X$). This is a statement about the second moment of the distribution of $\hat{\beta}$, and not about its distribution. So the Gauss-Markov theorem (which is still a very important result in statistics and very useful to understand the concept of efficiency) does not require assumptions about the distribution of $\varepsilon$ to hold. Moreover, even if the OLS may not be the most efficient when homoskedasticity is violated, it is still consistent. One just needs to be careful about the way its standard errors are being estimated. But this is very different from saying that the linear model does not work when the error term is not normal and when is heteroskedasticity or autocorrelation in the residuals. We just need to modify its standard error (i.e. the way we measure the uncertainty of that estimator) to take that feature into account.
+However, there are also other considerations that may be important. For instance, one may be concerned with the **efficiency** of the estimator (i.e., obtaining the estimator with the smallest possible variance). The Gauss-Markov theorem shows that the OLS estimator is the most efficient when the error term is homoskedastic (i.e. the variance of $\varepsilon$ does not depend on $X$). This is a statement about the second moment of the distribution of $\hat{\beta}$, and not about its distribution. So the Gauss-Markov theorem (which is still a very important result in statistics and very useful to understand the concept of efficiency) does not require assumptions about the distribution of $\varepsilon$ to hold. Moreover, even if the OLS may not be the most efficient when homoskedasticity is violated, it is still consistent. One just needs to be careful about the way its standard errors are being estimated. But this is very different from saying that the linear model does not work when the error term is not normal and when there is heteroskedasticity or autocorrelation in the residuals. One just needs to modify the computation of its standard error (i.e. the way we measure the uncertainty of that estimator) to take those features into account.
 
-Where is the confusion coming from in my opinion?
+The misconception about the assumptions needed for consistent estimation of the parameters of a linear model has, in my opinion, two main drivers:
 
-1.  **Misunderstanding the results of the CLT.** A common myth is that if the distribution of the estimator is normal, then the underlying distribution of the data must be normal as well. This is **false**. As long as certain moments of the underlying distribution of the data exist, the estimators we use (and in particular, the OLS estimator in @eq-eq:olsest) are constructed using averages. These averages are well-behaved so that, when the sample size is sufficiently large, the uncertainty can be characterized by a normal distribution. These approximation do not work when certain moments of the distribution of the data do not exist (i.e., Cauchy).
+1.  **Misunderstanding the results of the CLT.** A common myth is that if the distribution of the estimator is normal, then the underlying distribution of the data must be normal as well. This is **false**. As long as certain moments of the underlying distribution of the data exist, the estimators we use (and in particular, the OLS estimator in @eq-eq:olsest) are constructed using averages. These averages are well-behaved so that, when $n$ is sufficiently large, the uncertainty can be characterized by a normal distribution. These approximation do not work only when certain moments of the distribution of the data do not exist (i.e., Cauchy).
 
-2.  **Gaussian implies linear, and linear implies Gaussian.** It is true that if the joint distribution of $(Y,X)$ is jointly normal than the conditional expectation of $Y$ given $X$ is a linear function of $X$, and that $Y$ can be characterized by the sum of its conditional expectation (a liner function of $X$) plus a normal random variable which is independent of $X$ (basically a linear model). But then the second implication is not necessarily true. We can construct a DGP in which the conditional expectation of $Y$ given $X$ is linear, even if the joint distribution is not a normal distribution (see below). Moreover, there is an important distinction between a model linear in $X$ and a model that is linear in $\beta$. We can still include nonlinearities in the latter by introducing polynomial terms or monotone transformations of $X$. So the use case of a model linear in parameter is not confined to the Gaussian world.
+2.  **Gaussian implies linear, and linear implies Gaussian.** It is true that, if the distribution of $(Y,X)$ is jointly normal, the conditional expectation of $Y$ given $X$ is a linear function of $X$, and that $Y$ can be characterized by the sum of its conditional expectation (a liner function of $X$) plus a normal random variable which is independent of $X$ (basically a linear model). But then the latter implication is not necessarily true. We can construct a DGP in which the conditional expectation of $Y$ given $X$ is linear, even if the joint distribution is not a normal distribution (see below). Moreover, there is an important distinction between a model linear in $X$ and a model that is linear in $\beta$. We can still include nonlinearities in the latter by introducing polynomial terms or monotone transformations of $X$. So the use case of a model linear in parameter is not confined to the Gaussian world.
 
 ## Simulations
+
+I would like to verify, using simulations, some of the claims made in the previous section. This is not an exhaustive exercise, and it is meant to give an idea about the practical implications of using robust standard errors when homoskedasticity is not satisfied. The code of these simulations is provided, so that readers should feel free to explore with different data-generating processes (DGPs). 
 
 We first load the R libraries that we require for this simple exercise.
 
@@ -92,17 +96,16 @@ We first load the R libraries that we require for this simple exercise.
 #| echo: true
 
 library(knitr)
-library(ggplot2)
 library(sandwich)
 ```
 
 In particular, the R library `sandwich` allows us to construct several estimators of the standard errors that are robust to heteroskedasticity and autocorrelation in the residuals (see, e.g., @white_1980 and @newey_west_1987).
 
-Throughout this session, we fix the sample size to a grid of point $n= \lbrace 100,250,500,1000 \rbrace$ to assess how the properties of our estimator improve as we increase the sample size. Also, our goal is to show that the distribution of the estimator in finite but large samples is approximately normal.
+Throughout this session, I vary the sample size $n= \lbrace 100,250,500,1000 \rbrace$ to assess how the properties of our estimator improve as $n$ increases. Also, our goal is to show that the distribution of the estimator in finite but large samples is approximately normal.
 
 ### Regression model with IID data when the error term is non-normally distributed.
 
-Let us fix the sample size to $100$, and consider the following DGP
+Let us fix $n = 100$, and consider the following DGP
 
 ```{r}
 #| label: sim_gdp_1
@@ -129,6 +132,8 @@ data_ex_1 <- dgp_fun_1(100)
 error_std <- data_ex_1$error/sd(data_ex_1$error)
 ```
 
+I take $\beta_0 = \beta_1 = 1$, $X\sim Unif[0,1]$, and the error term to follow a skew-normal distribution (a linear combination between a normal random variable and a half-normal random variable, see @azzalini_2013), which is clearly asymmetric, as shown in @fig-sim_dgp_1. The error term in this first simple exercise is take to be fully independent of $X$. Its mean is not zero, so I centered it to satisfy the assumption that $E(\varepsilon) = 0$.^[If the error term has a non-zero mean, we would not be able to identify the parameter $\beta_0$. ]
+
 ```{r}
 #| label: fig-sim_dgp_1
 #| echo: false
@@ -138,7 +143,7 @@ plot(qnorm(seq(0.01,0.99,0.01)), quantile(error_std, probs = seq(0.01,0.99,0.01)
 lines(qnorm(seq(0.01,0.99,0.01)),qnorm(seq(0.01,0.99,0.01)), col = "black",lty = 2,lwd = 1.5)
 ```
 
-In this case the error term as as skew-normal distribution (a linear combination between a normal random variable and a half-normal random variable, see @azzalini_2013), which is clearly asymmetric, as shown in @fig-sim_dgp_1. In @tbl-regresults_sim_1, we report the results for the estimation with one random sample, where we also report the $95\%$ confidence interval.
+In @tbl-regresults_sim_1, we report the results for the estimation with one random sample, where we also report the $95\%$ confidence interval.
 
 ```{r}
 #| label: tbl-regresults_sim_1
@@ -158,8 +163,8 @@ The coefficients have the expected sign and magnitude, and the $95\%$ confidence
 
 Let us now run a large scale simulation exercise with $R = 10000$ replications for increasing sample size. The goal of this exercise is to show that:
 
-1.  The coefficients converge to their true value as the sample size increase.
-2.  The distribution of the coefficients is approximately normal, and the approximation improves as the sample size increases, even if the distribution of the error term is not normal.
+1.  The coefficients converge to their true value as $n$ increases.
+2.  The distribution of the coefficients is approximately normal, and the approximation improves as $n$ increases, even if the distribution of the error term is not normal.
 
 ```{r}
 #| label: largescalesim1
@@ -217,7 +222,11 @@ In @fig-sim_dgp_1_coef the lines are indistinguishable, showing that the normal 
 
 ### Regression model with IID data when the error term is non-normally distributed and heteroskedastic
 
-Let us consider the same example as before, and let us now add heteroskedasticity of the error term though an exponential function, with $n = 100$.
+Let us consider the same example as before, and let us now add heteroskedasticity of the error term through a linear function, with $n = 100$. As 
+$$
+Var(( 1+ X) \varepsilon) = \sigma^2 E [ ( 1 + X)^2 ] = \sigma^2 \left( 1 + 2 E[X] + E[X^2] \right) = \sigma^2 \frac{7}{3},
+$$
+I normalize the variance by $3/7$ to obtain the same signal-to-noise ratio as in the first simulation study. 
 
 ```{r}
 #| label: sim_gdp_2
@@ -234,7 +243,7 @@ dgp_fun_2 <- function(n){
         
         x <- runif(n)
         
-        y <- 1 + x + exp(-x)*(epsilon - meaneps)
+        y <- 1 + x + sqrt(3/7)*(1 + x)*(epsilon - meaneps)
         
         return(data.frame(y = y, x = x, error = epsilon - mean(epsilon)))
 }
@@ -245,7 +254,7 @@ data_ex_2 <- dgp_fun_2(100)
 ```{r}
 #| label: tbl-regresults_sim_2
 #| echo: false
-#| tab-cap: Results for a randomly selected sample of $n = 100$ observations.
+#| tab-cap: Results for a randomly selected sample of $n = 100$ observations where standard errors are not corrected for heteroskedasticity.
 
 sumreg <- summary(lm(y ~ x, data = data_ex_2))$coefficients
 
@@ -256,7 +265,7 @@ rownames(sumreg) <- c("$\\hat{\\beta}_0$","$\\hat{\\beta}_1$")
 knitr::kable(sumreg, escape = FALSE, digits = 3)
 ```
 
-The results in @tbl-regresults_sim_2 seems very consistent with our results above: The estimator is still very close to the true value, which is not surprising, because heteroskedasticity does not affect our ability to estimate $\beta$, and true value of the parameter is still within the $95\%$ confidence interval. However, the standard errors are not correct here, because they ignore heteroskedasticity, which affects our confidence intervals, and therefore our ability to correctly assess the uncertainty of our point estimate.
+The results in @tbl-regresults_sim_2 seems very consistent with our results above: The estimator is still very close to the true value, which is not surprising, because heteroskedasticity does not affect our ability to estimate $\beta$, and true value of the parameter is still within the $95\%$ confidence interval. However, the standard errors are not correct in this example, because they ignore heteroskedasticity, which affects our confidence intervals, and therefore our ability to correctly assess the uncertainty of our point estimate.
 
 With the package `sandwich` in R, we can compute standard errors that are robust to heteroskedasticity of various form
 
@@ -266,7 +275,7 @@ vcov.rob <- sandwich::vcovHC(lm(y ~ x, data = data_ex_2), type = "HC1")
 
 The `type` argument specifies the type of heteroskedasticity-robust correction we want to apply. Here, we apply the `HC1` variant, which is close to what one gets in Stata with the option `robust` for the linear regression model. There are several variations of the `type` argument, and I suggest to take a look at the help file in the `sandwich` package and references therein.
 
-We modify the standard errors and confidence intervals in the previous tables, using now their heteroskedasticity-robust version. Results are reported in @tbl-regresults_sim_2_het.
+I modify the standard errors and confidence intervals in the previous tables, using now their heteroskedasticity-robust version. Results are reported in @tbl-regresults_sim_2_het.
 
 ```{r}
 #| label: tbl-regresults_sim_2_het
@@ -282,7 +291,7 @@ rownames(sumreg) <- c("$\\hat{\\beta}_0$","$\\hat{\\beta}_1$")
 knitr::kable(sumreg_het, escape = FALSE, digits = 3)
 ```
 
-We notice how the standard errors are now substantially larger than before, so that our $95\%$ confidence interval with homoskedasticity can undercover (sometimes severely) the distribution of $\beta$. To quantity the undercoverage, we consider a large-scale simulation, in which the nominal coverage of the confidence intervals is compared with the coverage we obtain with and without the correction for heteroskedasticity.
+The standard errors are now substantially larger than before, so that our $95\%$ confidence interval with homoskedasticity can undercover (sometimes severely) the distribution of $\beta$. To quantity the undercoverage, we consider a large-scale simulation, in which the nominal coverage of the confidence intervals is compared with the coverage we obtain with and without the correction for heteroskedasticity.
 
 ```{r}
 #| label: largescalesim2
@@ -322,13 +331,21 @@ knitr::kable(tabregcov2, booktabs = TRUE, escape = FALSE, col.names = c("",rep(c
         kableExtra::row_spec(c(1,6), extra_css = "border-bottom: 1px solid")
 ```
 
-In @tbl-covresults_sim_2, the coverage of the confidence intervals that use the assumption of homoskedasticity deteriorates as the sample size increases; while those constructed using the heteroskedasticity-robust standard error preserve coverage, and coverage is very close to the nominal one for samples of modest size.
+In @tbl-covresults_sim_2, the coverage of the confidence intervals that use the assumption of homoskedasticity are shorter than they should be; while those constructed using the heteroskedasticity-robust standard error preserve coverage, and coverage is very close to the nominal one for samples of modest size.
 
-**Take home message 2**: you can still use the linear model when you have heteroskedasticity. Just make sure that you account for it when you construct your standard errors, using heteroskedasticy-robust estimate.
+**Take home message 2**: you can still use the linear model when you have heteroskedasticity. Just make sure that you account for it when you construct your standard errors, using heteroskedasticity-robust estimate.
 
 ### Regression model with time-series data when the error term is non-normally distributed and auto-correlated
 
-Let us consider a different data-generating process, when the error term is allowed to be autocorrelated and heteroskedastic. I don't generate autocorrelation in the regressor, but there is going to be autocorrelation in the dependent variable, because of the autocorrelation in the error term. As before, let us start with a sample of modest size $n = 100$.
+Let us consider a different data-generating process, when the error term is allowed to be autocorrelated and heteroskedastic. I don't generate autocorrelation in the regressor, but there is going to be autocorrelation in the dependent variable, because of the autocorrelation in the error term. I define the error term as following an auto-regressive process of order $1$, where the autoregressive parameter $\rho= 0.8$. If we let $\sigma^2_\varepsilon = Var(\varepsilon)$, and
+
+$$
+U_i = \rho U_{i - 1} + \varepsilon_i,
+$$
+
+then $E(U) = 0$, and $Var(U) = \sigma^2_\varepsilon/(1 - \rho^2)$. Therefore, in the simulation, I multiply the error term by $(1 - \rho^2)$, so that the error to noise ratio is comparable to the previous simulation scheme, where I only introduce heteroskedasticity. 
+
+As before, let us start with a sample of modest size $n = 100$. Here, when simulating the autoregressive model, I burn the first $1000$ data points to allow the process to reach its stationary path.
 
 ```{r}
 #| label: sim_gdp_3
@@ -336,21 +353,23 @@ Let us consider a different data-generating process, when the error term is allo
 set.seed(42)
 
 meaneps <- 0.75*sqrt(2/pi)
-vareps <- 0.25^2 +  (0.75^2)*(1 - 2/pi)
+vareps <- 0.25^2 + (0.75^2)*(1 - 2/pi)
         
+burn <- 1000
 dgp_fun_3 <- function(n){
   
-        epsilon <- 0.25*rnorm(n) + 0.75*abs(rnorm(n))
+        epsilon <- 0.25*rnorm(n+burn) + 0.75*abs(rnorm(n+burn))
         
-        u <- integer(n)
+        u <- integer(n + burn)
+        rho <- 0.8
         u[1] <- epsilon[1] - meaneps
-        for(dd in 2:n){
-          u[dd] <- 0.8*u[dd-1] + (epsilon[dd] - meaneps)
+        for(dd in 2:(n + burn)){
+          u[dd] <- rho*u[dd-1] + (epsilon[dd] - meaneps)
         }
-        
+        u <- u[(burn + 1):(n+burn)]
         x <- runif(n)
         
-        y <- 1 + x + exp(-x)*u
+        y <- 1 + x + sqrt(3/7)*(1 - rho^2)*(1 + x)*u
         
         return(data.frame(y = y, x = x, error = u))
 }
@@ -361,7 +380,7 @@ data_ex_3 <- dgp_fun_3(100)
 ```{r}
 #| label: tbl-regresults_sim_3
 #| echo: false
-#| tab-cap: Results for a randomly selected sample of $n = 100$ observations.
+#| tab-cap: Results for a randomly selected sample of $n = 100$ observations where standard errors are not corrected for heteroskedasticity and autocorrelation.
 
 sumreg <- summary(lm(y ~ x, data = data_ex_3))$coefficients
 
@@ -377,6 +396,7 @@ The results in @tbl-regresults_sim_3 show the same pattern as before. The estima
 With the package `sandwich` in R, we can compute standard errors that are robust to heteroskedasticity and autocorrelation following the approach of @newey_west_1987.
 
 ```{r}
+#| echo: true
 vcov.rob.ac <- sandwich::vcovHAC(lm(y ~ x, data = data_ex_3)) 
 ```
 
@@ -395,7 +415,7 @@ sumreg_het[,3:4] <- sumreg[,1] + matrix(c(-1,-1,1,1),2,2)*qnorm(0.975)*sumreg_he
 colnames(sumreg) <- c("Estimate","Std. Error","CI(95%) LB","CI(95%) UB")
 rownames(sumreg) <- c("$\\hat{\\beta}_0$","$\\hat{\\beta}_1$")
 
-kable(sumreg_het, escape = FALSE, digits = 3)
+knitr::kable(sumreg_het, escape = FALSE, digits = 3)
 ```
 
 We see the same pattern as before: our heteroskedasticity and autocorrelation robust standard errors are much larger than those considering homoskedasticity. Therefore, if we were not to use them, we would severely underestimate the uncertainty associated to our point estimate.
@@ -442,12 +462,12 @@ knitr::kable(tabregcov3, booktabs = TRUE, escape = FALSE, col.names = c("",rep(c
 
 In @tbl-covresults_sim_3, the same pattern as before emerges: the coverage of the confidence interval deteriorates as the sample size increase when we do not account for heteroskedasticity and autocorrelation in the estimation of the standard errors. In this case, with the robust standard errors, confidence intervals are too wide (they have larger length than the nominal one), so they lead us to the conservative approach of over-estimating the risk of the OLS estimator.
 
-**Take home message 3**: you can still use the linear model when you have heteroskedasticity and autocorrelation. Just make sure that you account for it when you construct your standard errors, using heteroskedasticy and autocorrelation robust estimate.
+**Take home message 3**: you can still use the linear model when you have heteroskedasticity and autocorrelation. Just make sure that you account for it when you construct your standard errors, using heteroskedasticity and autocorrelation robust estimate.
 
 ## How to detect deviations from homoskedasticity?
 
 How do we know what type of robust estimate to use for the standard errors? Ideally, we could plot, explore and test our data to decide. One can use the Breusch-Pagan test for heteroskedasticity and, if you have time-series, you can run autocorrelation tests on the OLS residuals (e.g., Durbin-Watson test).
 
-You can also use the wild bootstrap to obtain a finite-sample approximation to the asymptotic distribution of your data. This procedure is robust to heteroskedasticity (@liu_1988,@davidson_2008), and modifications of it can be used for dependent data (@shao_2010).
+You can also use the wild bootstrap to obtain a finite-sample approximation to the asymptotic distribution of your data. This procedure is robust to heteroskedasticity (@liu_1988,@davidson_2008), and modifications of it can be used for dependent data (@shao_2010). 
 
 ## References
